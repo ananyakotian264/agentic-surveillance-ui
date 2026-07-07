@@ -5,6 +5,8 @@ import os
 from PIL import Image
 from streamlit_autorefresh import st_autorefresh
 from dotenv import load_dotenv
+from io import BytesIO  
+import base64
 
 # 1. Load Environment Variables (Crucial for Cloud DB)
 load_dotenv()
@@ -100,11 +102,20 @@ else:
             img_col, text_col = st.columns([1, 2])
             
             with img_col:
-                try:
-                    img = Image.open(row['image_path'])
-                    st.image(img, caption=f"Source: {row['image_path']}", use_container_width=True)
-                except FileNotFoundError:
-                    st.error("Image file purged or missing.")
+                img_data = str(row['image_path'])
+                
+                # Check if it's our new Base64 text format
+                if img_data.startswith("data:image"):
+                    try:
+                        base64_str = img_data.split(",")[1]
+                        image_bytes = base64.b64decode(base64_str)
+                        img = Image.open(BytesIO(image_bytes))
+                        st.image(img, use_container_width=True)
+                    except Exception as e:
+                        st.error("Failed to decode image from database.")
+                else:
+                    # Fallback for old local logs already in the database
+                    st.error("Image file purged or missing. (Legacy log)")
             
             with text_col:
                 st.markdown("### Agent Rationale")
