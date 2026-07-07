@@ -86,18 +86,21 @@ with col3:
 st.divider()
 
 # 6. Interactive Event Log Gallery
+# 6. Interactive Event Log Gallery
 st.subheader("Recent Security Incidents")
 
 if logs_df.empty:
     st.info("No security events logged yet. Waiting for Planner Agent to trigger the Database MCP Tool...")
 else:
     for index, row in logs_df.head(5).iterrows():
+        # Store the ID safely
+        event_id = int(row['id']) 
+        
         with st.expander(f"⚠️ Event [{row['severity_score']}/5] at {row['timestamp']}", expanded=(index==0)):
             img_col, text_col = st.columns([1, 2])
             
             with img_col:
                 try:
-                    # Note: This still relies on the local temp_frames folder for the image file
                     img = Image.open(row['image_path'])
                     st.image(img, caption=f"Source: {row['image_path']}", use_container_width=True)
                 except FileNotFoundError:
@@ -107,9 +110,9 @@ else:
                 st.markdown("### Agent Rationale")
                 st.write(row['agent_rationale'])
                 
-                st.markdown("### Vision Model Raw Output")
-                st.caption(row['vlm_description'])
-                
                 st.markdown("### Actions Taken via MCP")
                 st.success(row['action_taken'])
-
+                
+                # NEW: Delete button with a completely unique key for Streamlit
+                if st.button(f"🗑️ Delete Event #{event_id}", key=f"del_{event_id}"):
+                    delete_log(event_id)
