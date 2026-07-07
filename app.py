@@ -55,6 +55,22 @@ def fetch_logs():
 # 4. Data Fetching
 logs_df = fetch_logs()
 
+def delete_log(event_id):
+    db_url = os.getenv("DATABASE_URL")
+    if not db_url:
+        return
+    try:
+        conn = psycopg2.connect(db_url)
+        with conn.cursor() as cursor:
+            # Delete the specific row using its unique ID
+            cursor.execute("DELETE FROM security_events WHERE id = %s", (event_id,))
+        conn.commit()
+        conn.close()
+        st.toast(f"🗑️ Event #{event_id} deleted successfully!")
+        st.rerun()  # Instantly refresh the UI to remove the item
+    except Exception as e:
+        st.error(f"Failed to delete event: {e}")
+
 # 5. Top-Level Metrics Dashboard
 col1, col2, col3 = st.columns(3)
 with col1:
@@ -96,3 +112,4 @@ else:
                 
                 st.markdown("### Actions Taken via MCP")
                 st.success(row['action_taken'])
+
