@@ -66,57 +66,51 @@ This decoupled architecture separates AI reasoning from system execution, making
 # 🔄 Workflow
 
 ```mermaid
-flowchart LR
+flowchart TD
+    subgraph Edge Node [Local Hardware / Laptop]
+        A[Webcam Feed]
+        B[OpenCV HOG Detector]
+        C[agent_orchestrator.py]
+        F[mcp_client.py]
+        G[mcp_server.py]
+    end
 
-subgraph Edge
-A[Webcam]
-B[OpenCV HOG Detector]
-end
+    subgraph Cognitive Cloud [Groq AI Infrastructure]
+        D[Vision Agent: Llama-4-Scout]
+        E[Planner Agent: Llama-3.3-70b]
+    end
 
-subgraph AI
-C[agent_orchestrator.py]
-D[Groq Vision Model]
-E[Threat Analysis Agent]
-end
+    subgraph Web Infrastructure [Public Cloud]
+        H[(Supabase PostgreSQL)]
+        I[SMTP Email Router]
+        J[Streamlit Community Cloud]
+    end
 
-subgraph MCP
-F[mcp_client.py]
-G[mcp_server.py]
-H[(SQLite Database)]
-I[SMTP Email Tool]
-end
-
-subgraph Dashboard
-J[Streamlit]
-end
-
-A --> B
-B -->|Human Detected| C
-C --> D
-D --> E
-E --> F
-F --> G
-G --> H
-G --> I
-H --> J
+    A --> B
+    B -->|Human Detected| C
+    C <-->|Spatial Analysis| D
+    C <-->|Threat Logic & Rationale| E
+    C -->|Trigger Tools| F
+    F --> G
+    G -->|Inject Base64 Image & Log| H
+    G -->|Level 5 Critical Alert| I
+    H -.->|Auto-fetches via psycopg2| J
 ```
 
 ---
 
-# 🛠 Technology Stack
+## 🛠️ Technology Stack
 
 | Category | Technology |
-|-----------|------------|
-| Programming Language | Python |
-| Computer Vision | OpenCV |
-| Agent Framework | LangGraph |
-| LLM Framework | LangChain |
-| AI Models | Groq (Llama Vision + Llama 3.3) |
-| Agent Communication | MCP |
-| Database | SQLite |
-| Frontend | Streamlit |
-| Environment Variables | python-dotenv |
-
+| :--- | :--- |
+| **Core Language** | Python 3.10+ |
+| **Computer Vision** | OpenCV (HOG Descriptor) |
+| **AI Orchestration** | LangGraph, LangChain |
+| **Cloud Intelligence**| Groq API (Llama-4-Scout, Llama-3.3-70b) |
+| **Tool Execution** | Model Context Protocol (MCP) |
+| **Cloud Database** | Supabase (PostgreSQL) |
+| **Frontend UI** | Streamlit Community Cloud |
+| **Environment** | `python-dotenv` |
 ---
 
 # 📂 Project Structure
@@ -130,7 +124,7 @@ SMART_SURVEILLANCE/
 ├── agent_orchestrator.py     # LangGraph orchestration
 ├── app.py                    # Streamlit dashboard
 ├── gateway.py                # AI model gateway
-├── live_surveillance.db      # SQLite database
+├── live_surveillance.db      # Supabase (PostgreSQL)
 ├── mcp_client.py             # MCP client
 ├── mcp_server.py             # MCP server exposing tools
 ├── motion_detector.py        # OpenCV surveillance pipeline
@@ -260,7 +254,7 @@ This project demonstrates practical implementation of:
 - Computer Vision
 - Tool Calling
 - Event-Driven Architecture
-- SQLite
+- Supabase (PostgreSQL)
 - Streamlit
 
 ---
