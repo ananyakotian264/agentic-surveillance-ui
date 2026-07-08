@@ -260,8 +260,8 @@ This project demonstrates practical implementation of:
 ---
 # Live link:
 https://agentic-surveillance-ui.streamlit.app/
----
 
+---
 # 👩‍💻 Author
 **Ananya P Kotian**
 
