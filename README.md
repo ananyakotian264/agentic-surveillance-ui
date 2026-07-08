@@ -232,8 +232,6 @@ The Streamlit dashboard displays:
 - Logged alerts
 - System status
 
-*(Add screenshots here)*
-
 ---
 
 # 🚀 Future Enhancements
